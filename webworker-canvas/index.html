@@ -1,0 +1,68 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+
+  <title>The Robots</title>
+  <meta name="description" content="The HTML5 Robots">
+  <meta name="author" content="Amazitu">
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
+  <style>
+    body { 
+      background-color: gray; 
+    }
+    canvas { 
+      background-color: aquamarine;
+      margin: 10px; 
+    }
+    textarea { 
+      background-color: gray(201, 192, 192);
+      margin: 10px; 
+      margin-left: 0px;
+    }
+    button { 
+      background-color: white;
+      margin: 10px; 
+      margin-right: 0px;
+    }
+    .flex-container {
+      display: flex;
+      height: 300px;
+      justify-content: center;
+      align-items: center;
+    }
+</style>
+  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+
+</head>
+<body>
+  
+  <div>
+    <textarea id="robotCode" name="w3review" rows="27" cols="70">
+      var x = 150; var y = 150; var sig = 11;
+      
+      onmessage = function(e) {
+        x += sig;
+        if (x > 300) {
+            sig = -sig;
+            x = 299;
+        }
+        else if (x < 0) {
+            sig = -sig;
+            x = 1;
+        }
+        postMessage([x, y]);
+      }      
+      </textarea>
+      <canvas id="myCanvas" margin="10px" width="600" height="600"></canvas>
+    </div>    
+    <button type="button" onclick="btn_onClick()">Save</button>
+    <button type="button" onclick="btn_onClick()">Load</button>
+    <button type="button" onclick="btn_onClick()">Run</button>
+     
+  <script src="./main.js"></script>
+</body>
+</html>
