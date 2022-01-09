@@ -16,22 +16,24 @@ function main() {
     ctx = canvas.getContext("2d");
     window.requestAnimationFrame(draw);
 
-    if (window.Worker) {
-        myWorker1 = new Worker("mover.js");
-        myWorker1.onmessage = function(e) {
-            //console.log('Message received from worker:', e.data[0], e.data[1]);
-            x1 = e.data[0];
-            y1 = e.data[1];
-        }
-    } 
-    else {
-        console.log('Your browser doesn\'t support web workers.')
-    }
+    // if (window.Worker) {
+    //     myWorker1 = new Worker("mover.js");
+    //     myWorker1.onmessage = function(e) {
+    //         //console.log('Message received from worker:', e.data[0], e.data[1]);
+    //         x1 = e.data[0];
+    //         y1 = e.data[1];
+    //     }
+    // } 
+    // else {
+    //     console.log('Your browser doesn\'t support web workers.')
+    // }
 }
 
 let w = undefined;
 
 function btn_onClick() {
+    noerr = true;
+
     if (w != undefined) {
         w.terminate();
         w = undefined;
@@ -47,11 +49,20 @@ function btn_onClick() {
         x2 = e.data[0];
         y2 = e.data[1];
     }
+
+    w.onerror = function (e) {
+        noerr = false;
+        // console.log("filename: " + e.filename + ", line: " + e.lineno + ", message: " + e.message + ", all: " + e);
+        var s = "Line " + e.lineno + ": " + e.message;
+        console.log(s);
+        alert(s);
+    }
 }
 
 var skip = 0;
+var noerr = true;
 function draw() {
-    if (++skip > 0) 
+    if (++skip > 0 && noerr) 
     {
         skip = 0;
         if (w) w.postMessage(0);

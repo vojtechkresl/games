@@ -30,7 +30,7 @@
     }
     .flex-container {
       display: flex;
-      height: 300px;
+      height: 200px;
       justify-content: center;
       align-items: center;
     }
@@ -41,8 +41,8 @@
 <body>
   
   <div>
-    <textarea id="robotCode" name="w3review" rows="27" cols="70">
-      var x = 150; var y = 150; var sig = 11;
+    <textarea id="robotCode" name="w3review" rows="17" cols="70">
+      var x = 150; var y = 50; var sig = 11;
       
       onmessage = function(e) {
         x += sig;
@@ -57,10 +57,10 @@
         postMessage([x, y]);
       }      
       </textarea>
-      <canvas id="myCanvas" margin="10px" width="600" height="600"></canvas>
+      <canvas id="myCanvas" margin="10px" width="600" height="300"></canvas>
     </div>    
-    <button type="button" onclick="btn_onClick()">Save</button>
-    <button type="button" onclick="btn_onClick()">Load</button>
+    <!-- <button type="button" onclick="btn_onClick()">Save</button>
+    <button type="button" onclick="btn_onClick()">Load</button> -->
     <button type="button" onclick="btn_onClick()">Run</button>
      
   <script src="./main.js"></script>
