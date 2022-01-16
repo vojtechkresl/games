@@ -4,11 +4,22 @@ const createScene = function () {
     const scene = new BABYLON.Scene(engine);  
     scene.clearColor = new BABYLON.Color3(0.31, 0.48, 0.64);
 
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 10, 0), scene);
+    // const ambLight = new BABYLON.HemisphericLight("ambLight", new BABYLON.Vector3(0, 10, 0), scene);
+    // ambLight.diffuse = new BABYLON.Color3(1, 1, 1);
+	// ambLight.specular = new BABYLON.Color3(0, 1, 0);
+	// ambLight.groundColor = new BABYLON.Color3(1, 1, 1);
+    const dirLight = new BABYLON.DirectionalLight("dirlight", new BABYLON.Vector3(-1, -2, 1), scene);
+    // dirLight.
 
     const player = BABYLON.MeshBuilder.CreateSphere("player", { segments: 7, diameter: 0.2 }, scene);
     player.position.y = 0.1;
+    
     const ground = BABYLON.MeshBuilder.CreateGround("ground", {width:20, height:10, subdivisions:5}, scene);
+
+    const groundMat = new BABYLON.StandardMaterial("groundMat");
+    groundMat.diffuseColor = new BABYLON.Color3(0, 0.4, 0);
+    groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
+    ground.material = groundMat; //Place the material property of the ground
 
     // const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(0, 0, 0), scene);
     // camera.attachControl(canvas, true);
@@ -46,8 +57,10 @@ const createScene = function () {
     });
 
     debug_showAxis(3, scene);
-    const debug_light = BABYLON.MeshBuilder.CreateSphere("debug_light", { segments: 7, diameter: 0.2 }, scene);
-    debug_light.position = new BABYLON.Vector3(5, 4, 0);
+    // const debug_light = BABYLON.MeshBuilder.CreateSphere("debug_light", { segments: 7, diameter: 0.2 }, scene);
+    // debug_light.position = new BABYLON.Vector3(5, 4, 0);
+
+    BABYLON.register
 
     return scene;
 };
