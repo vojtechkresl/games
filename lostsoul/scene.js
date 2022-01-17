@@ -2,22 +2,22 @@
 const createScene = function () {
 
     const scene = new BABYLON.Scene(engine);  
-    scene.clearColor = new BABYLON.Color3(0.31, 0.48, 0.64);
+    scene.clearColor = new BABYLON.Color3(0.9, 0.9, 0.9);
 
-    // const ambLight = new BABYLON.HemisphericLight("ambLight", new BABYLON.Vector3(0, 10, 0), scene);
+    const ambLight = new BABYLON.HemisphericLight("ambLight", new BABYLON.Vector3(0, 10, 0), scene);
     // ambLight.diffuse = new BABYLON.Color3(1, 1, 1);
-	// ambLight.specular = new BABYLON.Color3(0, 1, 0);
-	// ambLight.groundColor = new BABYLON.Color3(1, 1, 1);
+	ambLight.specular = new BABYLON.Color3(1, 1, 1);
+	ambLight.groundColor = new BABYLON.Color3(1, 1, 1);
     const dirLight = new BABYLON.DirectionalLight("dirlight", new BABYLON.Vector3(-1, -2, 1), scene);
-    // dirLight.
+    // var lightx = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, 1), scene);
 
     const player = BABYLON.MeshBuilder.CreateSphere("player", { segments: 7, diameter: 0.2 }, scene);
-    player.position.y = 0.1;
+    player.position.y = 1.1;
     
     const ground = BABYLON.MeshBuilder.CreateGround("ground", {width:20, height:10, subdivisions:5}, scene);
 
     const groundMat = new BABYLON.StandardMaterial("groundMat");
-    groundMat.diffuseColor = new BABYLON.Color3(0, 0.4, 0);
+    groundMat.diffuseColor = new BABYLON.Color3(0.4, 0.3, 0.01);
     groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
     ground.material = groundMat; //Place the material property of the ground
 
@@ -30,37 +30,72 @@ const createScene = function () {
     camera.upperRadiusLimit = 50;
     camera.attachControl(canvas, true);    
 
-    // BABYLON.SceneLoader.Append("./assets/", "alien.glb", scene, function (scene) {});
-    // BABYLON.SceneLoader.Append("./assets/", "rover.glb", scene, function (scene) {});
-    // BABYLON.SceneLoader.Append("./assets/", "alien.glb", scene, function (scene) {});
-    // BABYLON.SceneLoader.Append("./assets/", "alien.glb", scene, function (scene) {});
-    // The first parameter can be used to specify which mesh to import. Here we import all meshes
+    // shadows
+    ground.receiveShadows = true;
+    var shadowGenerator = new BABYLON.ShadowGenerator(512, dirLight);
+    shadowGenerator.useBlurExponentialShadowMap = true;
+    shadowGenerator.addShadowCaster(player);
+    
+    var turret = null;
+
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "rover.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
         mesh0.position.x += 2;
+        shadowGenerator.addShadowCaster(mesh0);
     });
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "alien.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
         mesh0.position.x += 1;
+        shadowGenerator.addShadowCaster(mesh0);
     });
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "turret_double.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
-        mesh0.position.x += 0;
+        // mesh0.position.z += 1;
+        // mesh0.position.x += 1;
+        shadowGenerator.addShadowCaster(mesh0);
+        turret = mesh0;
     });
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "hangar_largeB.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
         mesh0.position.x -= 3;
+        shadowGenerator.addShadowCaster(mesh0);
     });
 
     debug_showAxis(3, scene);
     // const debug_light = BABYLON.MeshBuilder.CreateSphere("debug_light", { segments: 7, diameter: 0.2 }, scene);
     // debug_light.position = new BABYLON.Vector3(5, 4, 0);
 
-    BABYLON.register
+    // dirLight.autoCalcShadowZBounds = true
+    // dirLight.autoCalcShadowXBounds = true
+    // dirLight.autoCalcShadowYBounds = true
+
+    var time = 0;
+    var reverse = false;
+    scene.registerBeforeRender(function() {
+        time += 0.01;
+        if(player.position.x > .3){
+            reverse = true;            
+        };
+        if(player.position.x < 0){
+            reverse = false;            
+        };
+        if(reverse){
+            player.position.x -= 0.005;
+            player.position.y -= 0.005;
+        }else{
+            player.position.x += 0.005;
+            player.position.y += 0.005;
+        }
+
+        if (turret) {
+            turret.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
+        }
+    });
+
 
     return scene;
 };
