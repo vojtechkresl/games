@@ -8,13 +8,13 @@ const createScene = function () {
     // ambLight.diffuse = new BABYLON.Color3(1, 1, 1);
 	ambLight.specular = new BABYLON.Color3(1, 1, 1);
 	ambLight.groundColor = new BABYLON.Color3(1, 1, 1);
-    const dirLight = new BABYLON.DirectionalLight("dirlight", new BABYLON.Vector3(-1, -2, 1), scene);
+    const dirLight = new BABYLON.DirectionalLight("dirlight", new BABYLON.Vector3(10, -20, -10), scene);
     // var lightx = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(1, 10, 1), scene);
 
     const player = BABYLON.MeshBuilder.CreateSphere("player", { segments: 7, diameter: 0.2 }, scene);
     player.position.y = 1.1;
     
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", {width:20, height:10, subdivisions:5}, scene);
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", {width:500, height:500, subdivisions:5}, scene);
 
     const groundMat = new BABYLON.StandardMaterial("groundMat");
     groundMat.diffuseColor = new BABYLON.Color3(0.4, 0.3, 0.01);
@@ -25,43 +25,52 @@ const createScene = function () {
     // camera.attachControl(canvas, true);
     // const camera = new BABYLON.FollowCamera("camera", new BABYLON.Vector3(0, 25, 5), scene, player);
     // const camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 10, -10), scene);
-    const camera = new BABYLON.ArcRotateCamera("camera", BABYLON.Tools.ToRadians(125), BABYLON.Tools.ToRadians(70), 10, new BABYLON.Vector3(0, 0, 0), scene);
+    const camera = new BABYLON.ArcRotateCamera("camera", BABYLON.Tools.ToRadians(-70), BABYLON.Tools.ToRadians(70), 5, new BABYLON.Vector3(0, 0, 0), scene);
     camera.lowerRadiusLimit = 5;
     camera.upperRadiusLimit = 50;
     camera.attachControl(canvas, true);    
 
     // shadows
     ground.receiveShadows = true;
-    var shadowGenerator = new BABYLON.ShadowGenerator(512, dirLight);
+    var shadowGenerator = new BABYLON.ShadowGenerator(1024, dirLight);
     shadowGenerator.useBlurExponentialShadowMap = true;
     shadowGenerator.addShadowCaster(player);
     
-    var turret = null;
+    var turret1 = null;
+    var turret2 = null;
+    var turret3 = null;
+    var rover = null;
 
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "rover.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
-        mesh0.position.x += 2;
+        mesh0.position.x = 6;
+        mesh0.position.z = 2;
+        mesh0.scaling = new BABYLON.Vector3(2, 2, 2);
         shadowGenerator.addShadowCaster(mesh0);
+        rover = mesh0;
     });
-    BABYLON.SceneLoader.ImportMesh("", "./assets/", "alien.glb", scene, function (newMeshes) {
+    BABYLON.SceneLoader.ImportMesh("", "./assets/", "turret_single.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
-        let mesh0 = newMeshes[0];
-        mesh0.position.x += 1;
-        shadowGenerator.addShadowCaster(mesh0);
+        let mesh = newMeshes[0];
+        mesh.position.x = 1;
+        shadowGenerator.addShadowCaster(mesh);
     });
-    BABYLON.SceneLoader.ImportMesh("", "./assets/", "turret_double.glb", scene, function (newMeshes) {
+    BABYLON.SceneLoader.ImportMesh("", "./assets/", "my_turret_double.gltf", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
-        let mesh0 = newMeshes[0];
-        // mesh0.position.z += 1;
-        // mesh0.position.x += 1;
-        shadowGenerator.addShadowCaster(mesh0);
-        turret = mesh0;
+        let mesh = newMeshes[0];
+        // mesh.scaling = new BABYLON.Vector3(1, 1, 1);
+        // mesh.position = new BABYLON.Vector3(0,0,0);
+        shadowGenerator.addShadowCaster(mesh);
+        turret1 = newMeshes[1];
+        turret2 = newMeshes[2];
+        turret3 = newMeshes[3];
     });
     BABYLON.SceneLoader.ImportMesh("", "./assets/", "hangar_largeB.glb", scene, function (newMeshes) {
         // Set the target of the camera to the first imported mesh
         let mesh0 = newMeshes[0];
-        mesh0.position.x -= 3;
+        mesh0.scaling = new BABYLON.Vector3(2, 2, 2);
+        mesh0.position.z = 8;
         shadowGenerator.addShadowCaster(mesh0);
     });
 
@@ -77,23 +86,29 @@ const createScene = function () {
     var reverse = false;
     scene.registerBeforeRender(function() {
         time += 0.01;
-        if(player.position.x > .3){
-            reverse = true;            
-        };
-        if(player.position.x < 0){
+        if(rover && rover.position.x > 1){
             reverse = false;            
         };
+        if(rover && rover.position.x < -1){
+            reverse = true;            
+        };
         if(reverse){
-            player.position.x -= 0.005;
-            player.position.y -= 0.005;
+            if (rover)
+                rover.position.z -= 0.05;
+            // player.position.y -= 0.05;
         }else{
-            player.position.x += 0.005;
-            player.position.y += 0.005;
+            if (rover)
+                rover.position.z += 0.05;
+            // player.position.y += 0.05;
         }
 
-        if (turret) {
-            turret.rotate(BABYLON.Axis.Y, 0.05, BABYLON.Space.LOCAL);
+        // let turretHead = scene.getMeshByName("turret_double/turret");
+        if (turret1) {
+            turret1.addRotation(0, 0.01, 0);
+            turret2.addRotation(0, 0.01, 0);
+            turret3.addRotation(0, 0.01, 0);
         }
+
     });
 
 
